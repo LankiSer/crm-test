@@ -64,7 +64,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports', function() {
         return view('reports.index');
     })->name('reports');
-    
+
     Route::get('/settings', function() {
         return view('settings.index');
     })->name('settings');

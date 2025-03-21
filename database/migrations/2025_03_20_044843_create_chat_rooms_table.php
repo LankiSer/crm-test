@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('chat_room_user')) {
-            Schema::create('chat_room_user', function (Blueprint $table) {
+        // Проверяем, существует ли таблица
+        if (!Schema::hasTable('chat_rooms')) {
+            Schema::create('chat_rooms', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('chat_room_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->string('name');
+                $table->text('description')->nullable();
+                $table->boolean('is_group')->default(false);
                 $table->timestamps();
-                
-                $table->unique(['chat_room_id', 'user_id']);
             });
         }
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chat_room_user');
+        Schema::dropIfExists('chat_rooms');
     }
 };

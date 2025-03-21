@@ -26,7 +26,7 @@
                     <form action="{{ route('deals.update', $deal) }}" method="POST">
                         @csrf
                         @method('PUT')
-                        
+
                         <div class="mb-3">
                             <label for="name" class="form-label">Deal Name</label>
                             <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $deal->name) }}" required>
@@ -34,7 +34,7 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -42,9 +42,11 @@
                                     <select class="form-select @error('company_id') is-invalid @enderror" id="company_id" name="company_id">
                                         <option value="">Select Company</option>
                                         @foreach($companies as $company)
-                                            <option value="{{ $company->id }}" {{ old('company_id', $deal->company_id) == $company->id ? 'selected' : '' }}>
-                                                {{ $company->name }}
-                                            </option>
+                                            @if(is_object($company) && property_exists($company, 'id'))
+                                                <option value="{{ $company->id }}" {{ old('company_id', $deal ? (int) $deal->company_id : '') == (int) $company->id ? 'selected' : '' }}>
+                                                    {{ $company->name }}
+                                                </option>
+                                            @endif
                                         @endforeach
                                     </select>
                                     @error('company_id')
@@ -52,17 +54,19 @@
                                     @enderror
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="contact_id" class="form-label">Contact</label>
                                     <select class="form-select @error('contact_id') is-invalid @enderror" id="contact_id" name="contact_id">
                                         <option value="">Select Contact</option>
-                                        @foreach($contacts as $contact)
-                                            <option value="{{ $contact->id }}" {{ old('contact_id', $deal->contact_id) == $contact->id ? 'selected' : '' }}>
-                                                {{ $contact->first_name }} {{ $contact->last_name }}
-                                            </option>
-                                        @endforeach
+                                        <select name="company_id" id="company_id">
+                                            @foreach($companies as $id => $name)
+                                                <option value="{{ $id }}" {{ old('company_id', (int) $deal->company_id) == (int) $id ? 'selected' : '' }}>
+                                                    {{ $name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </select>
                                     @error('contact_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -70,7 +74,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
@@ -84,7 +88,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="status" class="form-label">Deal Status</label>
@@ -102,7 +106,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="expected_close_date" class="form-label">Expected Close Date</label>
@@ -113,7 +117,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
                             <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4">{{ old('description', $deal->description) }}</textarea>
@@ -121,7 +125,7 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        
+
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="submit" class="btn btn-primary">Update Deal</button>
                         </div>
@@ -143,15 +147,15 @@
                 companyId: opt.dataset.companyId
             };
         });
-        
+
         companySelect.addEventListener('change', function() {
             const selectedCompanyId = this.value;
-            
+
             // Clear current options (except the first one)
             while (contactSelect.options.length > 1) {
                 contactSelect.remove(1);
             }
-            
+
             // If no company is selected, don't filter
             if (!selectedCompanyId) {
                 originalContacts.forEach(contact => {
@@ -163,7 +167,7 @@
                 });
                 return;
             }
-            
+
             // Filter contacts by selected company
             originalContacts.forEach(contact => {
                 if (contact.id && contact.companyId == selectedCompanyId) {
@@ -175,4 +179,4 @@
         });
     });
 </script>
-@endsection 
+@endsection

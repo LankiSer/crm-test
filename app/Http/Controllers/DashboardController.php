@@ -19,29 +19,29 @@ class DashboardController extends Controller
         $totalCompanies = Company::count();
         $totalDeals = Deal::count();
         $openTasks = Task::where('status', '!=', 'completed')->count();
-        
+
         // Get deals by status for chart
         $dealsByStatus = Deal::selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->get()
             ->pluck('total', 'status')
             ->toArray();
-            
+
         // Get total deal value
-        $totalDealValue = Deal::sum('value');
-        
+        $totalDealValue = Deal::sum('amount');
+
         // Get recent tasks
         $recentTasks = Task::with('user')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
-            
+
         return view('dashboard', compact(
-            'totalContacts', 
-            'totalCompanies', 
-            'totalDeals', 
-            'openTasks', 
-            'dealsByStatus', 
+            'totalContacts',
+            'totalCompanies',
+            'totalDeals',
+            'openTasks',
+            'dealsByStatus',
             'totalDealValue',
             'recentTasks'
         ));
